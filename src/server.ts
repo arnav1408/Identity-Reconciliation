@@ -1,25 +1,29 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
-import connectDB from './config/database';
-import routes from './routes'; // importing the routes
+import { dataSource } from './config/database'; // Updated path according to your structure.
+import routes from './routes';
+import dotenv from 'dotenv';
 
-connectDB
-    .initialize()
+// Load environment variables from the .env file
+dotenv.config();
+
+// Initialize the database connection
+dataSource.connect() // Using `connect()` method to establish the connection.
     .then(() => {
         console.log("Connected to SQLite database");
 
         const app = express();
+        
+        // Middleware
         app.use(bodyParser.json());
 
-        app.use('/', routes);  // using the routes
+        // Routes
+        app.use('/', routes);
 
-        // Error Handling Middleware
-        app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-            if (res.headersSent) {
-                return next(err);
-            }
+        // Error handling middleware
+        app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
             console.error(err.stack);
-            res.status(500).json({ message: 'Internal Server Error' });
+            res.status(500).send('Internal Server Error');
         });
 
         const PORT = process.env.PORT || 3000;

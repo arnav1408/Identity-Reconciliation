@@ -1,12 +1,6 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('Contact')
+@Entity()
 export class Contact {
 
     @PrimaryGeneratedColumn()
@@ -21,11 +15,7 @@ export class Contact {
     @Column({ type: "int", nullable: true })
     linkedId?: number;
 
-    @Column({
-        type: "text",
-        enum: ["secondary", "primary"],
-        default: "primary"
-    })
+    @Column({ type: "text", default: "primary" })
     linkPrecedence!: "secondary" | "primary";
 
     @CreateDateColumn()

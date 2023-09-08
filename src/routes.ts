@@ -1,5 +1,5 @@
 import express from 'express';
-import { validateIdentifyRequest, identifyEndpoint } from './controllers/identifyController';
+import { validateIdentifyRequest, identify } from './controllers/identifyController';
 
 const router = express.Router();
 
@@ -9,6 +9,6 @@ router.get('/', (req, res) => {
 });
 
 // Identify endpoint with validation
-router.post('/identify', validateIdentifyRequest, identifyEndpoint);
+router.post('/identify', validateIdentifyRequest, identify);
 
 export default router;

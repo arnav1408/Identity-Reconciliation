@@ -1,24 +1,15 @@
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
+import { Contact } from "../Entities/Contact"; // Ensure this path is correct.
 import dotenv from "dotenv";
 
-// Load environment variables
 dotenv.config();
 
-const connectDB = new DataSource({
+const dataSourceOptions: DataSourceOptions = {
     type: "sqlite",
-    database: process.env.DATABASE_NAME as string,
+    database: process.env.DATABASE_PATH as string, // Ensure the environment variable is set and points to the right SQLite database file.
     logging: false,
-    synchronize: false,
-    entities: ["./src/Entities/**/*.ts"],
-});
+    synchronize: true,
+    entities: [Contact] // List all your entities here.
+};
 
-connectDB
-    .initialize()
-    .then(() => {
-        console.log(`Data Source has been initialized`);
-    })
-    .catch((err) => {
-        console.error(`Data Source initialization error`, err);
-    });
-
-export default connectDB;
+export const dataSource = new DataSource(dataSourceOptions);
