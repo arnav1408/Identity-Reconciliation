@@ -46,32 +46,19 @@ export const identify = async (req: Request, res: Response, next: NextFunction) 
             // Store the id of the first partial match record
             let linkId = records[0].id;
         
-            // If email is not null and is not present among any records, 
-            // create a new one with that email and link to the primary record
-            if (email) {
-                let isEmailFound = records.some(record => record.email === email);
+            // Check if email and phone are present before
+            let checkEmail = records.some(record => record.email === email);
+            let checkPhone = records.some(record => record.phoneNumber === phoneNumber);
         
-                if (!isEmailFound) {
-                    await ContactInfo.insertRecord({
-                        email,
-                        linkedId: linkId,
-                        linkPrecedence: LinkPrecedence.SECONDARY
-                    });
-                }
-            }
-        
-            // If phoneNumber is not null and is not present among any records, 
-            // create a new one with that phoneNumber and link to the primary record
-            if (phoneNumber) {
-                let isPhoneFound = records.some(record => record.phoneNumber === phoneNumber);
-        
-                if (!isPhoneFound) {
-                    await ContactInfo.insertRecord({
-                        phoneNumber,
-                        linkedId: linkId,
-                        linkPrecedence: LinkPrecedence.SECONDARY
-                    });
-                }
+            // If phone or email is not present, add new record with the given phone and email
+            // link precedence of it would be secondary
+            if (!checkPhone || !checkEmail) {
+                await ContactInfo.insertRecord({
+                    phoneNumber,
+                    email,
+                    linkedId: linkId,
+                    linkPrecedence: LinkPrecedence.SECONDARY
+                });
             }
         
             // Update link precedence of primary records with matching email or phoneNumber
