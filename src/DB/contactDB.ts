@@ -10,13 +10,15 @@ export class ContactDB {
         this.contactRepository = dataSource.manager.getRepository(Contact);
     }
 
-    async retrieveFullRecord(email?: string, phoneNumber?: string): Promise<Contact[]> {
+    // Return records with matching email AND phoneNumber
+    async retrieveCompleteMatchRecords(email?: string, phoneNumber?: string): Promise<Contact[]> {
         return this.contactRepository.find({
             where: { email, phoneNumber }
         });
     }
 
-    async retrieveLimitedRecord(email?: string, phoneNumber?: string): Promise<Contact[]> {
+    // Return records with matching email OR phoneNumber ordered by createdAt parameter in Ascending order
+    async retrievePartialMatchRecords(email?: string, phoneNumber?: string): Promise<Contact[]> {
         return this.contactRepository.find({
             where: [
                 { email },
@@ -28,11 +30,13 @@ export class ContactDB {
         });
     }
 
+    // Save the record to the database with the provided details
     async insertRecord(data: Partial<Contact>): Promise<Contact> {
         const contact = this.contactRepository.create(data);
         return this.contactRepository.save(contact);
     }
 
+    // Return records containing id and linkedID with matching email OR phoneNumber 
     async retrieveIDsFromEmailPhone(email?: string, phoneNumber?: string): Promise<{ id: number, linkedId?: number }[]> {
         const records = await this.contactRepository.find({
             select: ["id", "linkedId"],
@@ -47,6 +51,7 @@ export class ContactDB {
         }));
     }
 
+    // Return records containing id and linkedID with matching id or linkedId with all the ids
     async retrieveIDs(ids: number[]): Promise<{ id: number, linkedId?: number }[]> {
         return this.contactRepository.find({
             select: ["id", "linkedId"],
@@ -57,6 +62,7 @@ export class ContactDB {
         });
     }
 
+    // Return records where id matches any id of all the records in ascending order of creation
     async retrieveRecordsByIDs(ids: number[]): Promise<Contact[]> {
         return this.contactRepository.find({
             where: { id: In(ids) },
@@ -66,6 +72,7 @@ export class ContactDB {
         });
     }
 
+    // Return all records
     async retrieveAllRecords(): Promise<Contact[]> {
         return await this.contactRepository.find();
     }    
